@@ -40,14 +40,14 @@ pub fn get_installed_plugins() -> Result<Box<PluginsFile>> {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct PluginsFile {
-	version: u32,
-	plugins: Vec<Plugin>
+	pub version: u32,
+	pub plugins: Vec<Plugin>
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Plugin {
-	name: String,
-	version: String
+	pub name: String,
+	pub version: String
 }
 
 pub struct PluginManager {

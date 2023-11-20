@@ -40,23 +40,23 @@ pub fn get_manifest() -> Result<Manifest> {
 #[derive(Clone, Debug, Deserialize)]
 pub struct Manifest {
 	// This enforces what version the fields should be
-	version: u32,
-	source_types: Vec<SourceType>,
-	manifest: Vec<ManifestPlugin>,
+	pub version: u32,
+	pub source_types: Vec<SourceType>,
+	pub manifest: Vec<ManifestPlugin>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct ManifestPlugin {
-	name: String,
-	latest_version: String,
-	versions: Vec<String>,
-	source: String,
-	source_type: String
+	pub name: String,
+	pub latest_version: String,
+	pub versions: Vec<String>,
+	pub source: String,
+	pub source_type: String
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct SourceType {
-	name: String,
-	archive_path: String,
-	archive_type: String,
+	pub name: String,
+	pub archive_path: String,
+	pub archive_type: String,
 }
