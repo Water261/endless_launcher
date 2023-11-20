@@ -1,0 +1,9 @@
+{
+	"version": 1,
+	"plugins": [
+		{
+			"name": "Midnight Expansion",
+			"version": "0.10.4.0.2"
+		}
+	]
+}
