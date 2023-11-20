@@ -1,3 +1,5 @@
+mod manifest;
+
 use std::rc::Rc;
 
 use tracing::info;

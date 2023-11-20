@@ -1,11 +1,12 @@
 {
 	"version": 1,
-	"source_types": {
-		"github": {
+	"source_types": [
+		{
+			"name": "github",
 			"archive_path": "archive/refs/tags",
 			"archive_type": "zip"
 		}
-	},
+	],
 	"manifest": [
 		{
 			"name": "Midnight Expansion",
