@@ -35,11 +35,13 @@ pub fn get_installed_plugins() -> Result<Box<PluginsFile>> {
 	let plugins_reader = BufReader::new(plugins_file);
 	let plugins_file: PluginsFile = serde_json::from_reader(plugins_reader)?;
 
-	if !plugins_file.check_version() {
-		bail!(PluginsError::VersionMismatch)
-	}
-
 	Ok(Box::new(plugins_file))
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct PluginsFile {
+	version: u32,
+	plugins: Vec<Plugin>
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -76,34 +78,4 @@ impl PluginManager {
 	pub fn uninstall_plugin(&self, _plugin: &str) -> Result<()> {
 		todo!("Implement plugin uninstall functionality")
 	}
-}
-
-#[derive(Clone, Debug, Deserialize)]
-pub struct PluginsFile {
-	version: u32,
-	plugins: PluginsFileVersion
-}
-
-impl PluginsFile {
-	//* This is set up for future-proofing
-	#[allow(unreachable_patterns)]
-	pub fn check_version(&self) -> bool {
-		match self.version {
-			1 => {
-				
-
-				match self.plugins {
-					PluginsFileVersion::Version1(_) => true,
-					_ => false,
-				}
-			}
-			_ => todo!("Version number not recognised"),
-		}
-	}
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(untagged)]
-pub enum PluginsFileVersion {
-	Version1(Vec<Plugin>)
 }
