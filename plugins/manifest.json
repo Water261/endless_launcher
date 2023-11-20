@@ -1,0 +1,22 @@
+{
+	"version": 1,
+	"source_types": {
+		"github": {
+			"archive_path": "archive/refs/tags",
+			"archive_type": "zip"
+		}
+	},
+	"manifest": [
+		{
+			"name": "Midnight Expansion",
+			"latest_version": "0.10.4.0.2",
+			"versions": [
+				"0.10.4.0.0",
+				"0.10.4.0.1",
+				"0.10.4.0.2"
+			],
+			"source": "https://github.com/MidnightPlugins/Midnight-Expansion",
+			"source_type": "github"
+		}
+	]
+}
