@@ -1,0 +1,60 @@
+import { VerticalBox, TabWidget , HorizontalBox, ListView, Button, LineEdit , ComboBox} from "std-widgets.slint";
+import { InstancesTab } from "pages/instances.slint";
+import { PluginsTab, PluginInformation } from "pages/plugins.slint";
+import { Palette } from "palette.slint";
+import { GlobalCallbacks } from "globals.slint";
+export { GlobalCallbacks }
+
+export component AppWindow inherits Window {
+	title: "Endless Launcher";
+	min-width: 600px;
+	min-height: 800px;
+
+
+	// Because slint doesn't expose a dark mode variable, this is needed as a hacky workaround
+	out property <bool> dark-mode: root.background == #1C1C1C;
+	in-out property <bool> is-dark-mode <=> Palette.is-dark-mode;
+
+	in property <[PluginInformation]> plugins;
+
+	VerticalBox {
+		alignment: start;
+
+		Text {
+			text: "Endless Launcher";
+			font-size: Palette.primary-font-size;
+	
+			horizontal-alignment: center;
+			vertical-alignment: center;
+		}
+	
+		HorizontalBox {
+			alignment: center;
+
+			TabWidget {
+				Tab {
+					title: "Instances";
+		
+					VerticalBox {
+						alignment: space-between;
+						width: 550px;
+
+						instances := InstancesTab {}
+					}
+				}
+				Tab {
+					title: "Plugins";
+					
+					VerticalBox {
+						alignment: space-between;
+						width: 550px;
+
+						plugins := PluginsTab {
+							plugins: root.plugins;
+						}
+					}
+				}
+			}
+		}
+	}
+}

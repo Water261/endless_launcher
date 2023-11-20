@@ -1,0 +1,50 @@
+import { HorizontalBox, Button } from "std-widgets.slint";
+import { Palette } from "../palette.slint";
+import { IconButton } from "IconButton.slint";
+
+export component Instance inherits HorizontalBox {
+	in property <string> title;
+	in property <string> revision;
+	in property <string> source;
+
+	padding: 0;
+	padding-bottom: 1rem;
+	alignment: space-between;
+
+	VerticalLayout {
+		Text {
+			text: title;
+			font-size: Palette.secondary-font-size;
+		}
+
+		Text {
+			text: "Version: " + revision;
+		}
+
+		Text { 
+			text: "Source: " + source;
+		}
+	}
+
+	HorizontalBox {
+		spacing: 0.25rem;
+
+		run := IconButton {
+			text: "Run";
+			light-icon: @image-url("../icons/light/play.svg");
+			dark-icon: @image-url("../icons/dark/play.svg");
+		}
+
+		update := IconButton {
+			text: "Update";
+			light-icon: @image-url("../icons/light/update.svg");
+			dark-icon: @image-url("../icons/dark/update.svg");
+		}
+
+		delete := IconButton {
+			text: "Delete";
+			light-icon: @image-url("../icons/light/delete.svg");
+			dark-icon: @image-url("../icons/dark/delete.svg");
+		}
+	}
+}

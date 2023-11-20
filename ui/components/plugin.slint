@@ -1,0 +1,91 @@
+import { VerticalBox , HorizontalBox} from "std-widgets.slint";
+import { Palette } from "../palette.slint";
+import { IconButton } from "IconButton.slint";
+import { GlobalCallbacks } from "../globals.slint";
+
+export component Plugin inherits HorizontalBox {
+	in property <string> title;
+	in property <string> available-version;
+	in property <string> installed-version;
+	in property <bool> is-installed;
+
+	padding: 0;
+	padding-bottom: 1rem;
+	alignment: space-between;
+
+	VerticalLayout {
+		alignment: start;
+		
+		Text {
+			text: title;
+			font-size: Palette.secondary-font-size;
+		}
+
+		Text {
+			text: "Available: " + root.available-version;
+		}
+
+		Text {
+			text: "Installed: " + installed-version;
+		}
+	}
+
+	HorizontalBox {
+		spacing: 0.25rem;
+
+		// Installed States
+		states [
+			installed when is-installed : {
+				installed-button.light-icon: @image-url("../icons/light/delete.svg");
+				installed-button.dark-icon: @image-url("../icons/dark/delete.svg");
+				installed-button.text: "Uninstall";
+
+				update-button.text: "Update";
+				update-button.light-icon: @image-url("../icons/light/update.svg");
+				update-button.dark-icon: @image-url("../icons/dark/update.svg");
+				update-button.width: update-button.preferred-width;
+			}
+			not-installed when !is-installed : {
+				installed-button.light-icon: @image-url("../icons/light/update.svg");
+				installed-button.dark-icon: @image-url("../icons/dark/update.svg");
+				installed-button.text: "Install";
+
+				update-button.text: "";
+				update-button.light-icon: @image-url("");
+				update-button.dark-icon: @image-url("");
+				update-button.width: 0px;
+			}
+		]
+
+		// Update States
+		states [
+			need-update when root.installed-version != root.available-version : {
+				update-button.enabled: true;
+			}
+			up-to-date when root.installed-version == root.available-version : {
+				update-button.enabled: false;
+			}
+		]
+
+		update-button := IconButton {
+			text: "Update";
+			light-icon: @image-url("../icons/light/update.svg");
+			dark-icon: @image-url("../icons/dark/update.svg");
+			enabled: true;
+			clicked => {
+				GlobalCallbacks.plugin-update(root.title)
+			}
+		}
+
+		installed-button := IconButton {
+			text: "";
+			clicked => {
+				if (is-installed) {
+					GlobalCallbacks.plugin-uninstall(root.title);
+				} else {
+					GlobalCallbacks.plugin-install(root.title);
+				}
+			}
+		}
+	}
+}

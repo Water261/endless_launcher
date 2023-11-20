@@ -1,0 +1,32 @@
+import { VerticalBox , ListView} from "std-widgets.slint";
+import { Palette } from "../palette.slint";
+import { Plugin } from "../components/plugin.slint";
+
+export struct PluginInformation {
+	name: string,
+	available-version: string,
+	installed-version: string,
+	is-installed: bool,
+}
+
+export component PluginsTab inherits VerticalBox {
+	in property <[PluginInformation]> plugins;
+
+	alignment: start;
+
+	Text {
+		text: "Plugins";
+		font-size: Palette.secondary-font-size;
+	}
+
+	ListView {
+		min-height: 700px;
+
+		for plugin in plugins : Plugin {
+			title: plugin.name;
+			installed-version: plugin.installed-version;
+			available-version: plugin.available-version;
+			is-installed: plugin.is-installed;
+		}
+	}
+}

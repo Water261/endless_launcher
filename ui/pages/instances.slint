@@ -1,0 +1,94 @@
+import { VerticalBox , ListView, LineEdit, ComboBox, TabWidget, Button} from "std-widgets.slint";
+import { Instance } from "../components/instance.slint";
+import { Palette } from "../palette.slint";
+import { IconButton } from "../components/IconButton.slint";
+
+export component InstancesTab inherits VerticalBox {
+	alignment: start;
+
+	// Installed Instances
+	Text {
+		text: "Installed Instances";
+		font-size: Palette.secondary-font-size;
+
+		horizontal-alignment: center;
+		vertical-alignment: center;
+	}
+
+	ListView {
+		min-height: 350px;
+
+		for data in [
+			{ title: "Latest1", revision: "f8ac5", source: "Continuous" },
+			{ title: "Latest2", revision: "f8ac5", source: "Continuous" },
+			{ title: "Latest3", revision: "f8ac5", source: "Continuous" },
+			{ title: "Latest4", revision: "f8ac5", source: "Continuous" },
+			{ title: "Latest5", revision: "f8ac5", source: "Continuous" },
+			{ title: "Latest6", revision: "f8ac5", source: "Continuous" },
+			{ title: "Latest7", revision: "f8ac5", source: "Continuous" },
+			{ title: "Latest8", revision: "f8ac5", source: "Continuous" },
+			{ title: "Latest9", revision: "f8ac5", source: "Continuous" }
+		] : Instance {
+			title: data.title;
+			revision: data.revision;
+			source: data.source;
+		}
+	}
+
+	// New Instances
+	Text {
+		text: "Create Instance";
+		font-size: Palette.secondary-font-size;
+
+		horizontal-alignment: center;
+		vertical-alignment: center;
+	}
+
+	Text {
+		text: "Instance Name";
+		horizontal-alignment: left;
+		vertical-alignment: center;
+	}
+	LineEdit {
+		text: "Latest";
+	}
+
+	Text {
+		text: "Git Repository";
+		horizontal-alignment: left;
+		vertical-alignment: center;
+	}
+	LineEdit {
+		text: "https://github.com/endless-sky/endless-sky";
+	}
+
+	Text {
+		text: "Source Type";
+		horizontal-alignment: left;
+		vertical-alignment: center;
+	}
+	source-type := ComboBox {
+		model: ["Continuous", "Release", "Pull Request"];
+	}
+	states [
+		release when source-type.current-value == "Release" : {
+			source-input.visible: true;
+			source-input.placeholder-text: "Git Tag";
+		}
+		pr when source-type.current-value == "Pull Request" : {
+			source-input.visible: true;
+			source-input.placeholder-text: "Pull Request (#xxx)";
+		}
+	]
+
+	source-input := LineEdit {
+		visible: false;
+		placeholder-text: "";
+	}
+
+	IconButton {
+		text: "Create Instance";
+		light-icon: @image-url("../icons/light/create.svg");
+		dark-icon: @image-url("../icons/dark/create.svg");
+	}
+}

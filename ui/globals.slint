@@ -1,0 +1,9 @@
+export global GlobalCallbacks {
+	//* All callbacks return a success boolean
+	// Update a plugin, providing the plugin name
+	callback plugin_update(string) -> bool;
+	// Install a plugin, providing the plugin name
+	callback plugin_install(string) -> bool;
+	// Uninstall a plugin, providing the plugin name
+	callback plugin_uninstall(string) -> bool;
+}

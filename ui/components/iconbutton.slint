@@ -1,0 +1,16 @@
+import { Button } from "std-widgets.slint";
+import { Palette } from "../palette.slint";
+
+export component IconButton inherits Button {
+	in property <image> light-icon;
+	in property <image> dark-icon;
+
+	states [
+		light when !Palette.is-dark-mode : {
+			icon: light-icon;
+		}
+		dark when Palette.is-dark-mode : {
+			icon: dark-icon;
+		}
+	]
+}
