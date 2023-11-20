@@ -1220,6 +1220,7 @@ dependencies = [
  "serde_json",
  "slint",
  "slint-build",
+ "thiserror",
  "tracing",
  "tracing-subscriber",
 ]

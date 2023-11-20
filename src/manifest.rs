@@ -1,4 +1,4 @@
-use std::{fs::File, fmt::Display};
+use std::fs::File;
 use std::io::BufReader;
 use std::path::PathBuf;
 
@@ -6,25 +6,18 @@ use anyhow::{Result, bail};
 use directories::ProjectDirs;
 use serde::Deserialize;
 use tracing::info;
+use thiserror::Error;
 
 use crate::APP_IDENTIFIER;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Error)]
 pub enum ManifestError {
-	/// Could not retrieve a valid home path
+	#[error("Could not retrieve a valid home path")]
 	ProjectDirectory
 }
 
-impl Display for ManifestError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-			ManifestError::ProjectDirectory => writeln!(f, "Could not retrieve a valid home path")
-		}
-    }
-}
-
 pub fn get_manifest() -> Result<Manifest> {
-	info!("Retrieving the projet directory");
+	info!("Retrieving the project directory");
     let project_dirs = match ProjectDirs::from(APP_IDENTIFIER[0], APP_IDENTIFIER[1], APP_IDENTIFIER[2]) {
 		Some(dir) => dir,
 		None => bail!(ManifestError::ProjectDirectory)
@@ -68,7 +61,7 @@ impl Manifest {
 					_ => false
 				};
 
-				return source_types_correct && manifest_correct
+				source_types_correct && manifest_correct
 			},
 			_ => todo!("Version number is not recognised")
 		}

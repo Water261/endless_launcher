@@ -1,28 +1,26 @@
-use std::{sync::RwLock, rc::Rc, fmt::Display, path::PathBuf, fs::File, io::BufReader};
+use std::fs::File;
+use std::io::BufReader;
+use std::path::PathBuf;
+use std::sync::RwLock;
 
 use anyhow::{bail, Result};
 use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
 use tracing::info;
+use thiserror::Error;
 
 use crate::{manifest::Manifest, APP_IDENTIFIER};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Error)]
 pub enum PluginsError {
-	/// Could not retrieve a valid home path
+	#[error("Could not retrieve a valid home path")]
 	ProjectDirectory,
-}
-
-impl Display for PluginsError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-			PluginsError::ProjectDirectory => writeln!(f, "Could not retrieve a valid home path")
-		}
-    }
+	#[error("Version specified does not match rest of file")]
+	VersionMismatch
 }
 
 pub fn get_installed_plugins() -> Result<Box<PluginsFile>> {
-	info!("Retrieving the projet directory");
+	info!("Retrieving the project directory");
 	let projects_dir = match ProjectDirs::from(APP_IDENTIFIER[0], APP_IDENTIFIER[1], APP_IDENTIFIER[2]) {
 		Some(dir) => dir,
 		None => bail!(PluginsError::ProjectDirectory)
@@ -37,6 +35,10 @@ pub fn get_installed_plugins() -> Result<Box<PluginsFile>> {
 	let plugins_reader = BufReader::new(plugins_file);
 	let plugins_file: PluginsFile = serde_json::from_reader(plugins_reader)?;
 
+	if !plugins_file.check_version() {
+		bail!(PluginsError::VersionMismatch)
+	}
+
 	Ok(Box::new(plugins_file))
 }
 
@@ -48,11 +50,11 @@ pub struct Plugin {
 
 pub struct PluginManager {
 	plugins_file: RwLock<Box<PluginsFile>>,
-	manifest_file: Rc<Box<Manifest>>
+	manifest_file: Box<Manifest>
 }
 
 impl PluginManager {
-	pub fn new(manifest_file: Rc<Box<Manifest>>, plugins_file: RwLock<Box<PluginsFile>>) -> Self {
+	pub fn new(manifest_file: Box<Manifest>, plugins_file: RwLock<Box<PluginsFile>>) -> Self {
 		Self {
 			manifest_file,
 			plugins_file
@@ -63,15 +65,15 @@ impl PluginManager {
 		todo!("Implement plugin restore functionality")
 	}
 
-	pub fn install_plugin(&self, plugin: &str) -> Result<()> {
+	pub fn install_plugin(&self, _plugin: &str) -> Result<()> {
 		todo!("Implement plugin install functionality")
 	}
 
-	pub fn update_plugin(&self, plugin: &str) -> Result<()> {
+	pub fn update_plugin(&self, _plugin: &str) -> Result<()> {
 		todo!("Implement plugin update functionality")
 	}
 
-	pub fn uninstall_plugin(&self, plugin: &str) -> Result<()> {
+	pub fn uninstall_plugin(&self, _plugin: &str) -> Result<()> {
 		todo!("Implement plugin uninstall functionality")
 	}
 }
@@ -88,12 +90,12 @@ impl PluginsFile {
 	pub fn check_version(&self) -> bool {
 		match self.version {
 			1 => {
-				let plugins_version = match self.plugins {
+				
+
+				match self.plugins {
 					PluginsFileVersion::Version1(_) => true,
 					_ => false,
-				};
-
-				return plugins_version;
+				}
 			}
 			_ => todo!("Version number not recognised"),
 		}
