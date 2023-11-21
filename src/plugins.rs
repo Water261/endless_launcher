@@ -9,14 +9,16 @@ use serde::{Deserialize, Serialize};
 use tracing::info;
 use thiserror::Error;
 
-use crate::{manifest::Manifest, APP_IDENTIFIER};
+use crate::{manifest::{Manifest, ManifestPlugin}, APP_IDENTIFIER};
 
 #[derive(Clone, Debug, Error)]
 pub enum PluginsError {
 	#[error("Could not retrieve a valid home path")]
 	ProjectDirectory,
 	#[error("Version specified does not match rest of file")]
-	VersionMismatch
+	VersionMismatch,
+	#[error("Could not find the specified plugin")]
+	PluginMissing
 }
 
 pub fn get_installed_plugins() -> Result<Box<PluginsFile>> {
@@ -38,7 +40,7 @@ pub fn get_installed_plugins() -> Result<Box<PluginsFile>> {
 	Ok(Box::new(plugins_file))
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct PluginsFile {
 	pub version: u32,
 	pub plugins: Vec<Plugin>
@@ -67,15 +69,68 @@ impl PluginManager {
 		todo!("Implement plugin restore functionality")
 	}
 
-	pub fn install_plugin(&self, _plugin: &str) -> Result<()> {
-		todo!("Implement plugin install functionality")
+	// TODO: Actually download the plugin
+	pub fn install_plugin(&self, plugin: &str) -> Result<()> {
+		let plugin = match self.get_manifest_plugin(plugin) {
+			Some(plugin) => plugin,
+			None => bail!(PluginsError::PluginMissing)
+		};
+
+		let installed_plugin = Plugin {
+			name: plugin.name,
+			version: plugin.latest_version
+		};
+
+		let mut write_guard = match self.plugins_file.try_write() {
+			Ok(guard) => guard,
+			Err(e) => bail!("{:?}", e)
+		};
+
+		write_guard.plugins.push(installed_plugin);
+		
+		Ok(())
 	}
 
 	pub fn update_plugin(&self, _plugin: &str) -> Result<()> {
 		todo!("Implement plugin update functionality")
 	}
 
-	pub fn uninstall_plugin(&self, _plugin: &str) -> Result<()> {
-		todo!("Implement plugin uninstall functionality")
+	pub fn uninstall_plugin(&self, plugin: &str) -> Result<()> {
+		let mut write_guard = match self.plugins_file.try_write() {
+			Ok(guard) => guard,
+			Err(e) => bail!("{:?}", e)
+		};
+
+		let index = match write_guard.plugins.iter().position(|p| &(p.name) == plugin) {
+			Some(index) => index,
+			None => bail!(PluginsError::PluginMissing)
+		};
+
+		write_guard.plugins.remove(index);
+
+		Ok(())
+	}
+
+	pub fn get_manifest_plugin(&self, plugin: &str) -> Option<ManifestPlugin> {
+		let index_opt = self.manifest_file.manifest.iter().position(|p| &(p.name) == plugin);
+
+		match index_opt {
+			Some(index) => self.manifest_file.manifest.get(index).cloned(),
+			None => None
+		}
+	}
+
+	pub fn get_installed_plugin(&self, plugin: &str) -> Result<Option<Plugin>> {
+		let read_guard = match self.plugins_file.try_read() {
+			Ok(guard) => guard,
+			Err(e) => bail!("{:?}", e)
+		};
+
+		let index_opt = read_guard.plugins.iter().position(|p| &(p.name) == plugin);
+
+		Ok(match index_opt {
+			Some(index) => read_guard.plugins.get(index).cloned(),
+			None => None
+		})
 	}
 }
